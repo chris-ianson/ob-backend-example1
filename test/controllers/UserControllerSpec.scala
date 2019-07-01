@@ -91,6 +91,17 @@ class UserControllerSpec extends UserControllerSpecHelper {
         }
       }
 
+      "return 415 if no data is sent" in {
+        running(_.overrides(
+          bind[UserServiceInterface].to[FailedUserServiceInterface]
+        )) { app =>
+          val requestR = FakeRequest(POST, "/users")
+            .withHeaders("host" -> "localhost")
+          val request = route(app, requestR).get
+          status(request) mustBe UNSUPPORTED_MEDIA_TYPE
+        }
+      }
+
       "return 201 when record is created" in {
 
         running(_.overrides(
